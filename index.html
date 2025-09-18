@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jason Orozco Zarco Final</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* slate-900 */
+            color: #cbd5e1; /* slate-300 */
+        }
+        #modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        #modal {
+            background-color: #1e293b; /* slate-800 */
+            padding: 2.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid #334155; /* slate-700 */
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+        }
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            z-index: 10;
+        }
+        .nav-button {
+            position: fixed;
+            bottom: 2rem;
+            z-index: 20;
+            padding: 0.75rem 1.5rem;
+            background-color: #1e293b; /* slate-800 */
+            border: 1px solid #334155; /* slate-700 */
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+            color: #60a5fa; /* blue-400 */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-button:hover {
+            background-color: #334155; /* slate-700 */
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+        }
+        #prevBtn {
+            left: 2rem;
+        }
+        #nextBtn {
+            right: 2rem;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Modal Dialog -->
+    <div id="modal-overlay">
+        <div id="modal">
+            <h2 class="text-3xl font-bold gradient-text mb-4">Welcome</h2>
+            <p class="text-slate-400 mb-8">Would you like to see video presentation or the slides?</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" id="watch-video-btn" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                    Watch Presentation Video
+                </a>
+                <button id="view-site-btn" class="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
+                    Explore the Slides
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Presentation Content (hidden by default) -->
+    <main id="presentation-content" style="display: none; height: 100%; position: relative;">
+        <!-- Slide 1: Title and Intro -->
+        <section class="slide active">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-6xl font-bold tracking-tight gradient-text mb-4">Global Health Insights</h1>
+                <h2 class="text-2xl md:text-3xl font-light text-slate-400 mb-8">A Data-Driven Analysis</h2>
+                <div class="text-left bg-slate-800 border border-slate-700 p-6 rounded-lg shadow-lg text-slate-300 max-w-2xl mx-auto">
+                    <p class="mb-2"><strong class="text-sky-400">A) Initial Interest:</strong> To uncover the hidden stories in global health data, exploring how infrastructure and policy impact human lives.</p>
+                    <p class="mb-2"><strong class="text-sky-400">B) Data Source:</strong> The World Health Organization's (WHO) Global Health Observatory, ensuring credible and comprehensive data.</p>
+                    <p><strong class="text-sky-400">C) Data Storage:</strong> All 39 CSVs were consolidated and managed in Google Sheets for its accessibility and ease of initial exploration.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: UHC and Life Expectancy -->
+        <section class="slide">
+            <div class="max-w-5xl mx-auto w-full">
+                <h2 class="text-3xl font-bold text-slate-200 mb-6">D) Question 1: How does Universal Health Coverage (UHC) impact life expectancy?</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center text-left">
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-lg shadow-lg">
+                        <h3 class="font-semibold text-xl text-sky-400 mb-3">E) Analysis & Format</h3>
+                        <p class="text-slate-400 mb-4">
+                            To visualize this, countries were sorted by their UHC Index score. A bar chart was created to compare the average life expectancy of the 10 countries with the highest UHC scores against the 10 countries with the lowest scores. This creates a clear, direct comparison.
+                        </p>
+                         <h3 class="font-semibold text-xl text-sky-400 mb-3">F) Yield & Learning</h3>
+                        <p class="text-slate-400">
+                            The analysis reveals a stark difference. Countries with the strongest health coverage see significantly higher life expectancies. This powerfully demonstrates that investing in accessible healthcare systems is a primary driver of a long and healthy life for a population.
+                        </p>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-700 p-4 rounded-lg shadow-inner">
+                        <canvas id="uhcChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 3: Sanitation and Child Mortality -->
+        <section class="slide">
+            <div class="max-w-5xl mx-auto w-full">
+                <h2 class="text-3xl font-bold text-slate-200 mb-6">D) Question 2: How does access to basic water and sanitation correlate with child mortality?</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center text-left">
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-lg shadow-lg">
+                        <h3 class="font-semibold text-xl text-sky-400 mb-3">E) Analysis & Format</h3>
+                        <p class="text-slate-400 mb-4">
+                            A 'Basic Services Index' was created by averaging water and sanitation data. Countries were then grouped into three tiers based on this index: Low (<60% coverage), Medium (60-90%), and High (>90%). A bar chart shows the average under-5 mortality rate for each tier.
+                        </p>
+                        <h3 class="font-semibold text-xl text-sky-400 mb-3">F) Yield & Learning</h3>
+                        <p class="text-slate-400">
+                            The data shows an unmistakable trend. The average child mortality rate in the low-tier group is dramatically higher than in the high-tier group. This highlights that fundamental infrastructure is one of the most critical and effective interventions for child survival.
+                        </p>
+                    </div>
+                     <div class="bg-slate-800 border border-slate-700 p-4 rounded-lg shadow-inner">
+                        <canvas id="sanitationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Car Dependency -->
+        <section class="slide">
+            <div class="max-w-5xl mx-auto w-full">
+                <h2 class="text-3xl font-bold text-slate-200 mb-6">D) Question 3: Is there a link between car dependency and negative health outcomes?</h2>
+                <div class="grid md:grid-cols-2 gap-8 items-center text-left">
+                    <div class="bg-slate-800 border border-slate-700 p-6 rounded-lg shadow-lg">
+                        <h3 class="font-semibold text-xl text-sky-400 mb-3">E) Analysis & Format</h3>
+                        <p class="text-slate-400 mb-4">
+                           Road traffic deaths were used as a proxy for car dependency. A bar chart compares the average chronic disease mortality rate for the 10 countries with the most traffic deaths against the 10 countries with the fewest.
+                        </p>
+                        <h3 class="font-semibold text-xl text-sky-400 mb-3">F) Yield & Learning</h3>
+                        <p class="text-slate-400">
+                            The comparison is clear: countries with higher traffic death rates also suffer from a higher burden of chronic disease. This suggests a dual health impact from car dependency: the immediate risk of accidents and the long-term consequences of pollution and sedentary lifestyles.
+                        </p>
+                    </div>
+                     <div class="bg-slate-800 border border-slate-700 p-4 rounded-lg shadow-inner">
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Slide 5: Conclusion -->
+        <section class="slide">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-6xl font-bold tracking-tight gradient-text mb-4">Key Takeaways</h1>
+                <div class="text-left bg-slate-800 border border-slate-700 p-8 rounded-lg shadow-lg text-slate-300 space-y-4 text-lg">
+                    <p><strong>1. Foundational Investments are Critical:</strong> Access to basic sanitation and water is one of the most powerful predictors of child survival.</p>
+                    <p><strong>2. Healthcare Systems Save Lives:</strong> A country's Universal Health Coverage strength is directly correlated with the life expectancy of its people.</p>
+                    <p><strong>3. Societal Choices Have Health Consequences:</strong> Broader societal factors, like transportation infrastructure, show a measurable correlation with public health outcomes.</p>
+                    <p class="pt-4 border-t border-slate-600 font-semibold text-sky-400">Conclusion: This analysis demonstrates the power of data to connect disparate factors and reveal a clear truth—that a healthier world is built on a foundation of accessible healthcare, essential infrastructure, and smart public policy.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Buttons -->
+        <button id="prevBtn" class="nav-button">Previous</button>
+        <button id="nextBtn" class="nav-button">Next</button>
+    </main>
+
+    <script>
+        // --- MODAL LOGIC ---
+        const modalOverlay = document.getElementById('modal-overlay');
+        const viewSiteBtn = document.getElementById('view-site-btn');
+        const watchVideoBtn = document.getElementById('watch-video-btn');
+        const presentationContent = document.getElementById('presentation-content');
+
+        function hideModal() {
+            modalOverlay.style.display = 'none';
+            presentationContent.style.display = 'block';
+        }
+
+        viewSiteBtn.addEventListener('click', hideModal);
+        watchVideoBtn.addEventListener('click', hideModal); // Hide modal even when opening video
+
+        // --- SLIDE NAVIGATION ---
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentSlide = 0;
+
+        function showSlide(n) {
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === n);
+            });
+            prevBtn.style.display = n === 0 ? 'none' : 'block';
+            nextBtn.style.display = n === slides.length - 1 ? 'none' : 'block';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        nextBtn.addEventListener('click', nextSlide);
+        prevBtn.addEventListener('click', prevSlide);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            else if (e.key === 'ArrowLeft') prevSlide();
+        });
+        showSlide(currentSlide);
+
+        // --- DATA PROCESSING AND CHARTING ---
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- CHART 1: UHC vs Life Expectancy (Bar Chart) ---
+            function createUhcChart() {
+                const bottom10Avg = 58.74;
+                const top10Avg = 81.33;
+                renderBarChart('uhcChart', 
+                    ['10 Lowest UHC Countries', '10 Highest UHC Countries'], 
+                    [bottom10Avg, top10Avg], 
+                    'Average Life Expectancy (years)',
+                    ['rgba(239, 68, 68, 0.7)', 'rgba(59, 130, 246, 0.7)']
+                );
+            }
+
+            // --- CHART 2: Sanitation vs Child Mortality (Bar Chart) ---
+            function createSanitationChart() {
+                const avgMortality = { low: 80.32, medium: 39.55, high: 7.91 };
+                renderBarChart('sanitationChart', 
+                    ['Low Access (<60%)', 'Medium Access (60-90%)', 'High Access (>90%)'], 
+                    [avgMortality.low, avgMortality.medium, avgMortality.high], 
+                    'Average Under-5 Mortality Rate'
+                );
+            }
+
+            // --- CHART 3: Traffic Deaths vs Chronic Disease (Bar Chart) ---
+            function createTrafficChart() {
+                const bottom10Avg = 11.23;
+                const top10Avg = 23.45;
+                renderBarChart('trafficChart', 
+                    ['10 Lowest Traffic Death Countries', '10 Highest Traffic Death Countries'], 
+                    [bottom10Avg, top10Avg], 
+                    'Average Chronic Disease Mortality (%)',
+                    ['rgba(59, 130, 246, 0.7)', 'rgba(239, 68, 68, 0.7)']
+                );
+            }
+
+            // Generic Bar Chart Renderer
+            function renderBarChart(canvasId, labels, data, yLabel, backgroundColors) {
+                const defaultColors = ['rgba(239, 68, 68, 0.7)', 'rgba(249, 115, 22, 0.7)', 'rgba(59, 130, 246, 0.7)'];
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: data,
+                            backgroundColor: backgroundColors || defaultColors,
+                            borderColor: '#334155',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: {
+                                title: { display: true, text: yLabel, color: '#94a3b8' },
+                                grid: { color: '#334155' },
+                                ticks: { color: '#94a3b8' }
+                            },
+                            y: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                        }
+                    }
+                });
+            }
+
+            // Initialize all charts
+            createUhcChart();
+            createSanitationChart();
+            createTrafficChart();
+        });
+    </script>
+</body>
+</html>
+
