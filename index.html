@@ -14,104 +14,94 @@
             font-family: 'Inter', sans-serif;
             background-color: #0f172a; /* slate-900 */
             color: #cbd5e1; /* slate-300 */
+            overflow: hidden; /* Prevent scrollbars during animations */
         }
-        #modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-        }
-        #modal {
-            background-color: #1e293b; /* slate-800 */
-            padding: 2.5rem;
-            border-radius: 0.75rem;
-            border: 1px solid #334155; /* slate-700 */
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3), 0 8px 10px -6px rgb(0 0 0 / 0.3);
-        }
+
+        /* --- Slide Animation Styles --- */
         .slide {
-            display: none;
-            width: 100%;
-            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            width: 100%;
+            height: 100%;
             padding: 2rem;
             text-align: center;
             position: absolute;
             top: 0;
             left: 0;
-            transition: opacity 0.5s ease-in-out;
             opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s ease-in-out;
         }
         .slide.active {
-            display: flex;
             opacity: 1;
+            visibility: visible;
             z-index: 10;
         }
-        .nav-button {
+        .slide.exiting {
+            opacity: 0;
+            visibility: hidden;
+            z-index: 9;
+        }
+
+        /* --- Progress Bar Styles --- */
+        #progress-container {
             position: fixed;
-            bottom: 2rem;
-            z-index: 20;
-            padding: 0.75rem 1.5rem;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
             background-color: #1e293b; /* slate-800 */
-            border: 1px solid #334155; /* slate-700 */
-            border-radius: 9999px;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-            color: #60a5fa; /* blue-400 */
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            z-index: 100;
         }
-        .nav-button:hover {
-            background-color: #334155; /* slate-700 */
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(to right, #38bdf8, #60a5fa);
+            transition: width 0.25s linear;
         }
-        #prevBtn {
-            left: 2rem;
-        }
-        #nextBtn {
-            right: 2rem;
-        }
+
         .gradient-text {
             background: linear-gradient(to right, #38bdf8, #60a5fa);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
+
+        /* --- Navigation Button Styles --- */
+        .nav-button {
+            /* Position is now handled by a wrapper div */
+            background-color: rgba(30, 41, 59, 0.5); /* slate-800 with transparency */
+            border: 1px solid #334155; /* slate-700 */
+            border-radius: 9999px;
+            color: #94a3b8; /* slate-400 */
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0; /* Hidden by default */
+            visibility: hidden;
+        }
+        .nav-button.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .nav-button:hover {
+            background-color: #334155; /* slate-700 */
+            color: #e2e8f0; /* slate-200 */
+        }
     </style>
 </head>
 <body>
 
-    <!-- Modal Dialog -->
-    <div id="modal-overlay">
-        <div id="modal">
-            <h2 class="text-3xl font-bold gradient-text mb-4">Welcome</h2>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="https://youtu.be/AAjI3YgpZXc" target="_blank" id="watch-video-btn" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-500 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                    Watch Presentation Video
-                </a>
-                <button id="view-site-btn" class="w-full sm:w-auto bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-                    Explore the Slides
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Presentation Content (hidden by default) -->
-    <main id="presentation-content" style="display: none; height: 100%; position: relative;">
+    <!-- Main Presentation Content -->
+    <main id="presentation-content" style="height: 100%; position: relative;">
         <!-- Slide 1: Title and Intro -->
-        <section class="slide active">
+        <section class="slide">
+            <audio id="audio-0" src="slideone.mp3" preload="metadata"></audio>
             <div class="max-w-4xl mx-auto">
                 <h1 class="text-5xl md:text-6xl font-bold tracking-tight gradient-text mb-4">Global Health Insights</h1>
                 <h2 class="text-2xl md:text-3xl font-light text-slate-400 mb-8">A Data-Driven Analysis</h2>
@@ -125,6 +115,7 @@
 
         <!-- Slide 2: UHC and Life Expectancy -->
         <section class="slide">
+            <audio id="audio-1" src="slidetwo.mp3" preload="metadata"></audio>
             <div class="max-w-5xl mx-auto w-full">
                 <h2 class="text-3xl font-bold text-slate-200 mb-6">D) Question 1: How does Universal Health Coverage (UHC) impact life expectancy?</h2>
                 <div class="grid md:grid-cols-2 gap-8 items-center text-left">
@@ -147,6 +138,7 @@
 
         <!-- Slide 3: Sanitation and Child Mortality -->
         <section class="slide">
+            <audio id="audio-2" src="slidethree.mp3" preload="metadata"></audio>
             <div class="max-w-5xl mx-auto w-full">
                 <h2 class="text-3xl font-bold text-slate-200 mb-6">D) Question 2: How does access to basic water and sanitation correlate with child mortality?</h2>
                 <div class="grid md:grid-cols-2 gap-8 items-center text-left">
@@ -169,6 +161,7 @@
 
         <!-- Slide 4: Car Dependency -->
         <section class="slide">
+             <audio id="audio-3" src="slidefour.mp3" preload="metadata"></audio>
             <div class="max-w-5xl mx-auto w-full">
                 <h2 class="text-3xl font-bold text-slate-200 mb-6">D) Question 3: Is there a link between car dependency and negative health outcomes?</h2>
                 <div class="grid md:grid-cols-2 gap-8 items-center text-left">
@@ -188,9 +181,10 @@
                 </div>
             </div>
         </section>
-        
+
         <!-- Slide 5: Conclusion -->
         <section class="slide">
+             <audio id="audio-4" src="slidefive.mp3" preload="metadata"></audio>
             <div class="max-w-4xl mx-auto">
                 <h1 class="text-5xl md:text-6xl font-bold tracking-tight gradient-text mb-4">Key Takeaways</h1>
                 <div class="text-left bg-slate-800 border border-slate-700 p-8 rounded-lg shadow-lg text-slate-300 space-y-4 text-lg">
@@ -203,65 +197,111 @@
         </section>
 
         <!-- Navigation Buttons -->
-        <button id="prevBtn" class="nav-button">Previous</button>
-        <button id="nextBtn" class="nav-button">Next</button>
+        <div class="fixed z-[150] bottom-8 left-0 right-0 flex justify-center items-center gap-x-4">
+            <button id="prevBtn" class="nav-button">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <button id="nextBtn" class="nav-button">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+
     </main>
+    
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
 
     <script>
-        // --- MODAL LOGIC ---
-        const modalOverlay = document.getElementById('modal-overlay');
-        const viewSiteBtn = document.getElementById('view-site-btn');
-        const watchVideoBtn = document.getElementById('watch-video-btn');
-        const presentationContent = document.getElementById('presentation-content');
+        document.addEventListener('DOMContentLoaded', async () => {
+            const slides = document.querySelectorAll('.slide');
+            const progressBar = document.getElementById('progress-bar');
+            const audioElements = document.querySelectorAll('audio');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
 
-        function hideModal() {
-            modalOverlay.style.display = 'none';
-            presentationContent.style.display = 'block';
-        }
+            let currentSlide = 0;
+            let totalElapsedTime = 0;
+            let slideTimeout;
+            let progressInterval;
 
-        viewSiteBtn.addEventListener('click', hideModal);
-        watchVideoBtn.addEventListener('click', hideModal); // Hide modal even when opening video
+            const getAudioDurations = () => {
+                const durationPromises = Array.from(audioElements).map(audio => {
+                    return new Promise((resolve) => {
+                        audio.onloadedmetadata = () => resolve(audio.duration + 0.5); // Buffer
+                        audio.onerror = () => resolve(7); // Fallback
+                    });
+                });
+                return Promise.all(durationPromises);
+            };
 
-        // --- SLIDE NAVIGATION ---
-        const slides = document.querySelectorAll('.slide');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        let currentSlide = 0;
+            const slideDurations = await getAudioDurations();
+            const totalPresentationDuration = slideDurations.reduce((acc, val) => acc + val, 0);
 
-        function showSlide(n) {
-            slides.forEach((slide, index) => {
-                slide.classList.toggle('active', index === n);
+            function goToSlide(index) {
+                if (index < 0 || index >= slides.length) return;
+
+                clearTimeout(slideTimeout);
+                clearInterval(progressInterval);
+                audioElements.forEach(a => { a.pause(); a.currentTime = 0; });
+
+                const previousSlide = currentSlide;
+                currentSlide = index;
+
+                slides.forEach(s => s.classList.remove('active', 'exiting'));
+                slides[currentSlide].classList.add('active');
+                if (previousSlide !== currentSlide && slides[previousSlide]) {
+                    slides[previousSlide].classList.add('exiting');
+                }
+
+                const currentAudio = audioElements[currentSlide];
+                if(currentAudio) {
+                    currentAudio.play().catch(e => console.warn("Audio play failed", e));
+                    slideTimeout = setTimeout(() => goToSlide(currentSlide + 1), slideDurations[currentSlide] * 1000);
+                }
+
+                updateProgressBar();
+
+                // Update nav button visibility
+                prevBtn.classList.toggle('visible', currentSlide > 0);
+                nextBtn.classList.toggle('visible', currentSlide < slides.length - 1);
+            }
+
+            function updateProgressBar() {
+                let previousSlidesDuration = 0;
+                for (let i = 0; i < currentSlide; i++) {
+                    previousSlidesDuration += slideDurations[i];
+                }
+                
+                const slideStartTime = Date.now();
+
+                progressInterval = setInterval(() => {
+                    const timeInCurrentSlide = (Date.now() - slideStartTime) / 1000;
+                    totalElapsedTime = previousSlidesDuration + timeInCurrentSlide;
+                    const progress = (totalElapsedTime / totalPresentationDuration) * 100;
+                    progressBar.style.width = `${Math.min(progress, 100)}%`;
+
+                    if (progress >= 100) {
+                        clearInterval(progressInterval);
+                    }
+                }, 100);
+            }
+            
+            // --- EVENT LISTENERS ---
+            prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+            nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') goToSlide(currentSlide + 1);
+                else if (e.key === 'ArrowLeft') goToSlide(currentSlide - 1);
             });
-            prevBtn.style.display = n === 0 ? 'none' : 'block';
-            nextBtn.style.display = n === slides.length - 1 ? 'none' : 'block';
-        }
 
-        function nextSlide() {
-            if (currentSlide < slides.length - 1) {
-                currentSlide++;
-                showSlide(currentSlide);
-            }
-        }
 
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                showSlide(currentSlide);
-            }
-        }
-
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight') nextSlide();
-            else if (e.key === 'ArrowLeft') prevSlide();
-        });
-        showSlide(currentSlide);
-
-        // --- DATA PROCESSING AND CHARTING ---
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // --- CHART 1: UHC vs Life Expectancy (Bar Chart) ---
+            // --- DATA PROCESSING AND CHARTING ---
             function createUhcChart() {
                 const bottom10Avg = 58.74;
                 const top10Avg = 81.33;
@@ -273,7 +313,6 @@
                 );
             }
 
-            // --- CHART 2: Sanitation vs Child Mortality (Bar Chart) ---
             function createSanitationChart() {
                 const avgMortality = { low: 80.32, medium: 39.55, high: 7.91 };
                 renderBarChart('sanitationChart', 
@@ -283,7 +322,6 @@
                 );
             }
 
-            // --- CHART 3: Traffic Deaths vs Chronic Disease (Bar Chart) ---
             function createTrafficChart() {
                 const bottom10Avg = 11.23;
                 const top10Avg = 23.45;
@@ -295,7 +333,6 @@
                 );
             }
 
-            // Generic Bar Chart Renderer
             function renderBarChart(canvasId, labels, data, yLabel, backgroundColors) {
                 const defaultColors = ['rgba(239, 68, 68, 0.7)', 'rgba(249, 115, 22, 0.7)', 'rgba(59, 130, 246, 0.7)'];
                 const ctx = document.getElementById(canvasId).getContext('2d');
@@ -327,12 +364,28 @@
                 });
             }
 
-            // Initialize all charts
+            // --- INITIALIZATION ---
             createUhcChart();
             createSanitationChart();
             createTrafficChart();
+            
+            const startOverlay = document.createElement('div');
+            startOverlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(15, 23, 42, 0.9); z-index: 200;
+                display: flex; justify-content: center; align-items: center;
+                color: #fff; font-size: 2rem; font-weight: bold; cursor: pointer;
+            `;
+            startOverlay.textContent = 'Click to Start Presentation';
+            document.body.appendChild(startOverlay);
+            
+            startOverlay.addEventListener('click', () => {
+                startOverlay.style.display = 'none';
+                goToSlide(0);
+            }, { once: true });
         });
     </script>
 </body>
 </html>
+
 
